@@ -110,7 +110,7 @@ Details: [`docs/data_quality_rules.md`](docs/data_quality_rules.md)
 | Excluded/quarantined rows | `TODO` (reason: `TODO`) |
 | Gold total sales = Silver total sales | `TODO` |
 
-Queries: [`validation/`](validation/)
+
 
 ## How to Run
 1. Upload `sales.csv` to a Unity Catalog Volume and confirm read permissions.
