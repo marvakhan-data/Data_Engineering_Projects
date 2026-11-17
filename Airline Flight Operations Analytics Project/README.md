@@ -5,7 +5,7 @@
 ### End-to-end Medallion Architecture on Databricks with Lakeflow Spark Declarative Pipelines
 
 
-![Architecture](/images/architecture.png.png
+![Architecture](Airline Flight Operations Analytics Project/images/architecture.png
 )
 
 </div>
