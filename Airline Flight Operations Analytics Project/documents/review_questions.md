@@ -132,9 +132,9 @@ ROUND(SUM(passengers) * 100.0 / SUM(seat_capacity), 1) AS load_factor_pct
 
 ## Q7. Which airline has the best on-time performance, and what is the most common delay reason?
 
-![Pic](/images/ontime.png)
+![Pic](../images/ontime.png)
 
-![Pic](/images/delayed_flight.png)
+![Pic](../images/delayed_flight.png)
 
 **Best On-Time Performance:** Fly Easy leads all airlines with 71.5% on-time performance (followed by Air Bharat at 69.9%, Coastal Air at 69.3%, Blue Wing at 67.4%, and Sky Jet at 65.7%).
 
