@@ -6,7 +6,7 @@ A data engineering project built using Databricks and Lakeflow Spark Declarative
 
 The project transforms raw hotel booking data into clean, reliable datasets and business insights to analyze bookings, revenue, hotel performance, room types, and booking channels.
 
-## Architecture
+
 
 
 
