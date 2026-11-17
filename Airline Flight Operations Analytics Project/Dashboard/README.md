@@ -24,7 +24,7 @@ Delivers carrier-level scorecards, route profitability, and delay root-cause ana
 * **Top Routes by Revenue:** Ranks top-performing domestic corridors including *Delhi → Kochi*, *Kochi → Delhi*, *Goa → Kolkata*, *Jaipur → Kochi*, and *Bengaluru* routes[cite: 3, 4].
 * **Delay Category & Root Causes:** Donut charts breaking down flight share by delay severity and operational root causes (*Weather*, *Air Traffic*, *Technical*, *Late Arrival*, *Crew*, and *Unknown*).
 
-![Airline Summary & Routes](/images/Airlines_Routes.png)
+![Airline Summary & Routes]([/images/Airlines_Routes.png](https://github.com/marvakhan-data/Data_Engineering_Projects/blob/main/Airline%20Flight%20Operations%20Analytics%20Project/images/Airlines_%26_%20delays.png))
 
 ---
 
