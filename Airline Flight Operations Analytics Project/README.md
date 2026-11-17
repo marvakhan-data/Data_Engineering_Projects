@@ -1,6 +1,6 @@
 <div align="center">
 
-# ✈️ Airline Flight Operations Analytics Platform
+# Airline Flight Operations Analytics Platform
 
 ### End-to-end Medallion Architecture on Databricks with Lakeflow Spark Declarative Pipelines
 
@@ -11,7 +11,7 @@
 
 ---
 
-## 📌 TL;DR
+## TL;DR
 
 | | |
 |---|---|
@@ -22,7 +22,7 @@
 
 ---
 
-## 🧭 Table of Contents
+##  Table of Contents
 
 - [Business Context](#-business-context)
 - [Architecture](#-architecture)
@@ -39,14 +39,14 @@
 
 ---
 
-## 🏢 Business Context
+## Business Context
 
 Five fictional airline brands (Sky Jet, Air Bharat, Blue Wing, Fly Easy, Coastal Air) operate domestic flights between ten Indian cities using ATR 72, Airbus A320 and Boeing 737 aircraft. Operations managers need reliable numbers on:
 
-- ✅ Flights, passengers and ticket revenue
-- ✅ Load factor (seat usage)
-- ✅ On-time performance and delay causes
-- ✅ Route and airline comparisons
+- Flights, passengers and ticket revenue
+- Load factor (seat usage)
+- On-time performance and delay causes
+- Route and airline comparisons
 
 > A flight departing up to **15 minutes late counts as On Time**. Early departures also count as On Time.
 
@@ -54,15 +54,15 @@ Five fictional airline brands (Sky Jet, Air Bharat, Blue Wing, Fly Easy, Coastal
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```mermaid
 flowchart LR
-    A[("📄 Source CSV<br/>Unity Catalog Volume")] --> B["🥉 BRONZE<br/>bronze_airline_flights<br/><i>Streaming table, raw + audit cols</i>"]
+    A[("📄 Source CSV<br/>Unity Catalog Volume")] --> B[" BRONZE<br/>bronze_airline_flights<br/><i>Streaming table, raw + audit cols</i>"]
     B --> C["🥈 SILVER<br/>silver_flights_clean<br/><i>Dedup, standardise, fill, categorise</i>"]
-    B --> D["🚫 SILVER<br/>silver_flights_rejected<br/><i>Overbooked / negative fare + reason</i>"]
-    C --> E["🥇 GOLD<br/>gold_monthly_flights<br/>gold_airline_summary<br/>gold_route_summary<br/>gold_delay_summary"]
-    B --> F["✅ GOLD<br/>gold_data_quality<br/><i>Counts + reconciliation</i>"]
+    B --> D[" SILVER<br/>silver_flights_rejected<br/><i>Overbooked / negative fare + reason</i>"]
+    C --> E[" GOLD<br/>gold_monthly_flights<br/>gold_airline_summary<br/>gold_route_summary<br/>gold_delay_summary"]
+    B --> F[" GOLD<br/>gold_data_quality<br/><i>Counts + reconciliation</i>"]
     C --> F
     D --> F
     E --> G["📊 Dashboard<br/>3 pages"]
@@ -71,13 +71,13 @@ flowchart LR
 
 | Layer | Purpose | Object type |
 |---|---|---|
-| 🥉 **Bronze** | Keep the source exactly as received, add `source_file` and `loaded_at` | Streaming table |
-| 🥈 **Silver** | Clean, standardise, derive `delay_category`, quarantine bad rows | Materialized views |
-| 🥇 **Gold** | Aggregated business metrics and data-quality proof | Materialized views |
+| **Bronze** | Keep the source exactly as received, add `source_file` and `loaded_at` | Streaming table |
+|  **Silver** | Clean, standardise, derive `delay_category`, quarantine bad rows | Materialized views |
+| **Gold** | Aggregated business metrics and data-quality proof | Materialized views |
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Platform:** Databricks (Unity Catalog, Volumes)
 - **Pipeline:** Lakeflow Spark Declarative Pipelines (SQL)
@@ -88,7 +88,7 @@ flowchart LR
 
 ---
 
-## 🧹 Data Quality Highlights
+##  Data Quality Highlights
 
  Summary:
 
@@ -104,7 +104,7 @@ flowchart LR
 | Negative average fare | 8 | Rejected with reason |
 | Negative delay minutes | n/a | **Kept**: flight left early, counted as On Time |
 
-### ✔️ Reconciliation: no row lost
+###  Reconciliation: no row lost
 
 ```text
 Bronze rows  =  Clean rows  +  Rejected rows  +  Duplicates removed
@@ -117,13 +117,13 @@ Bronze rows  =  Clean rows  +  Rejected rows  +  Duplicates removed
 
 | `delay_minutes` | Category |
 |---|---|
-| ≤ 15 (incl. negative) | 🟢 On Time |
-| 16 to 60 | 🟡 Minor Delay |
-| > 60 | 🔴 Major Delay |
+| ≤ 15 (incl. negative) |  On Time |
+| 16 to 60 |  Minor Delay |
+| > 60 |   Major Delay |
 
 ---
 
-## 🥇 Gold Layer Tables
+##  Gold Layer Tables
 
 | Table | Grain | Key metrics |
 |---|---|---|
@@ -144,7 +144,7 @@ ticket_revenue  = passengers * avg_fare
 
 ---
 
-## 📊 Dashboard
+##  Dashboard
 
 Three pages built on the Gold tables only:
 
@@ -156,21 +156,21 @@ Three pages built on the Gold tables only:
 
 
 
-## 📚 Documentation
+## Documentation
 
 | Document | What it contains |
 |---|---|
-| [📋 Data Quality Rules](docs/data_quality_rules.md) | 13 numbered rules (DQ-01 to DQ-13), SQL for each, pitfalls and acceptance checklist |
-| [✅ Reconciliation](docs/reconciliation.md) | Row-level proof that Bronze = Clean + Rejected + Duplicates, cross-checks, troubleshooting |
-| [❓ Review Questions](docs/review_questions.md) | Answers to the 8 project review questions, written for interviews and presentations |
+| [ Data Quality Rules](docs/data_quality_rules.md) | 13 numbered rules (DQ-01 to DQ-13), SQL for each, pitfalls and acceptance checklist |
+| [Reconciliation](docs/reconciliation.md) | Row-level proof that Bronze = Clean + Rejected + Duplicates, cross-checks, troubleshooting |
+| [ Review Questions](docs/review_questions.md) | Answers to the 8 project review questions, written for interviews and presentations |
 
 ---
 
-## 📁 Repository Structure
+##  Repository Structure
 
 ![WorkSpace](/images/workspace_structure.png)
 
-## 🚀 How to Run
+##  How to Run
 
 1. **Prepare storage** 
    ```sql
@@ -190,7 +190,7 @@ Three pages built on the Gold tables only:
 
 ---
 
-## 💡 Skills Demonstrated
+##  Skills Demonstrated
 
 | Area | Evidence in this project |
 |---|---|

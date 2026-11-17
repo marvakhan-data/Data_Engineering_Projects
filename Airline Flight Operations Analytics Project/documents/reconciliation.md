@@ -1,181 +1,87 @@
-<div align="center">
-
 # Reconciliation
 
-**Airline Flight Operations Analytics Platform**
+## Overview
 
-![Status](https://img.shields.io/badge/Reconciliation-Passed-brightgreen?style=flat-square)
-![Equation](https://img.shields.io/badge/1%2C365%20%3D%201%2C321%20%2B%2019%20%2B%2025-blue?style=flat-square)
+In this project, I used reconciliation to check whether all the records loaded into the Bronze layer were properly accounted for after data cleaning.
 
-</div>
+The main purpose was to make sure that no records were missing during the movement from Bronze to Silver.
 
-[← Back to README](../README.md) · [Data Quality Rules](data_quality_rules.md) · [Review Questions](review_questions.md)
+## Reconciliation Formula
 
----
+I used the following formula:
 
-## 1. What Is Reconciliation?
+`Bronze Rows = Clean Rows + Rejected Rows + Duplicate Rows Removed`
 
-Reconciliation means proving that **every input row is accounted for**: kept, rejected, or removed as a duplicate. If the totals do not balance, rows were silently lost or double counted, and the Gold numbers cannot be trusted.
+Every row from the original data should be accounted for in one of these categories:
 
-This satisfies business requirement **BR-06**: *Prove that Bronze rows = clean rows + rejected rows + duplicates removed.*
+- Clean records that passed the data quality rules.
+- Rejected records that failed the validation rules.
+- Duplicate records removed during cleaning.
 
----
+## Row Count Validation
 
-## 2. The Equation
+The original airline dataset contains 1,365 rows.
 
-```text
-bronze_rows  =  clean_rows  +  rejected_rows  +  duplicate_rows
-```
+| Layer or Category | What I Checked |
+|---|---|
+| Bronze | Total records loaded from the CSV |
+| Silver Clean | Records that passed the cleaning rules |
+| Silver Rejected | Records that failed validation |
+| Duplicates Removed | Extra records with repeated flight_id values |
 
-| Component | Source | Reference value |
-|---|---|---:|
-| `bronze_rows` | `COUNT(*)` on `bronze_airline_flights` | **1,365** |
-| `clean_rows` | `COUNT(*)` on `silver_flights_clean` | **1,321** |
-| `rejected_rows` | `COUNT(*)` on `silver_flights_rejected` | **19** |
-| `duplicate_rows` | `COUNT(*) - COUNT(DISTINCT flight_id)` on Bronze | **25** |
-| **Check** | 1,321 + 19 + 25 | **1,365 ✔** |
+The project reference expects:
 
-Reference values come from the example dashboard in the project brief. Your run should match them.
+- Bronze rows: 1,365
+- Clean Silver rows: 1,321
 
-### Where the 19 rejected rows come from
+I use the actual pipeline output to verify the rejected and duplicate counts.
 
-| Reject reason | Rows |
-|---|---:|
-| Passengers more than seats | 11 |
-| Average fare is negative | 8 |
-| **Total** | **19** |
+## Why I Used flight_id
 
----
+I used `flight_id` to identify duplicate records because it represents one flight on a particular day.
 
-## 3. Row Flow
+I did not use `flight_number` because the same flight number can operate on different days. Using it for duplicate checking could remove valid records.
 
-```mermaid
-flowchart TD
-    A["🥉 Bronze<br/>1,365 rows"] --> B["Remove duplicate flight_id<br/>− 25"]
-    B --> C["1,340 unique flights"]
-    C --> D{"Passengers ≤ seats<br/>and fare ≥ 0?"}
-    D -- "No: − 19" --> R["🚫 silver_flights_rejected<br/>19 rows"]
-    D -- "Yes" --> OK["🥈 silver_flights_clean<br/>1,321 rows"]
-    OK --> G["🥇 Gold tables"]
-```
+## Reconciliation in Gold Layer
 
----
+I created a Gold table named `gold_data_quality` to track the row counts and data quality results.
 
-## 4. `gold_data_quality` Table
+It includes:
 
-One row that holds both the problem counts (measured on Bronze, before fixing) and the reconciliation result.
+- Total Bronze rows
+- Duplicate rows
+- Clean Silver rows
+- Rejected Silver rows
+- Other data quality issue counts
 
-```sql
-CREATE OR REFRESH MATERIALIZED VIEW gold_data_quality AS
-SELECT
-  COUNT(*)                                                         AS bronze_rows,
-  COUNT(*) - COUNT(DISTINCT flight_id)                             AS duplicate_rows,
+I use these values to verify that the records are properly accounted for after cleaning.
 
-  -- Problems found in Bronze
-  SUM(CASE WHEN passengers > seat_capacity THEN 1 ELSE 0 END)      AS overbooked_rows,
-  SUM(CASE WHEN avg_fare < 0 THEN 1 ELSE 0 END)                    AS negative_fare_rows,
-  SUM(CASE WHEN airline IS NULL OR TRIM(airline) = ''
-           THEN 1 ELSE 0 END)                                      AS missing_airline_rows,
-  SUM(CASE WHEN delay_minutes IS NULL THEN 1 ELSE 0 END)           AS missing_delay_rows,
-  SUM(CASE WHEN ticket_revenue IS NULL THEN 1 ELSE 0 END)          AS missing_revenue_rows,
-  SUM(CASE WHEN delay_reason IS NULL OR TRIM(delay_reason) = ''
-           THEN 1 ELSE 0 END)                                      AS missing_reason_rows,
+## What I Check If Reconciliation Does Not Match
 
-  -- Outcome of cleaning
-  (SELECT COUNT(*) FROM silver_flights_clean)                      AS clean_rows,
-  (SELECT COUNT(*) FROM silver_flights_rejected)                   AS rejected_rows
-FROM bronze_airline_flights;
-```
+If the Bronze total does not match the sum of clean, rejected and duplicate rows, I investigate the issue.
 
-> **Note:** these problem counts are measured on all Bronze rows, including duplicates, so they describe the raw file. They are not expected to add up to `rejected_rows`.
+I check:
 
-### Reconciliation flag
+1. Whether duplicate records were counted correctly.
+2. Whether rejected records were included in the rejected table.
+3. Whether any records were missed during cleaning.
+4. Whether the row counts belong to the same pipeline run.
 
-```sql
-SELECT
-  bronze_rows,
-  clean_rows,
-  rejected_rows,
-  duplicate_rows,
-  clean_rows + rejected_rows + duplicate_rows                      AS accounted_rows,
-  bronze_rows - (clean_rows + rejected_rows + duplicate_rows)      AS unaccounted_rows,
-  CASE WHEN bronze_rows = clean_rows + rejected_rows + duplicate_rows
-       THEN 'Yes' ELSE 'No' END                                    AS reconciliation_passed
-FROM gold_data_quality;
-```
+After checking the issue, I validate the counts again.
 
-Expected result:
+## Final Validation
 
-| bronze_rows | clean_rows | rejected_rows | duplicate_rows | accounted_rows | unaccounted_rows | reconciliation_passed |
-|---:|---:|---:|---:|---:|---:|:---:|
-| 1,365 | 1,321 | 19 | 25 | 1,365 | 0 | Yes |
+Before using the Gold tables for reporting, I check that:
 
----
+- Bronze contains the expected source records.
+- Duplicate records are identified using `flight_id`.
+- Valid records are stored in `silver_flights_clean`.
+- Invalid records are stored in `silver_flights_rejected` with a rejection reason.
+- The reconciliation formula matches the actual pipeline counts.
+- Gold summary tables and dashboard totals agree with the clean Silver data.
 
-## 5. Additional Cross-Checks
+## Conclusion
 
-Reconciliation at row level is the main proof. These extra checks tie the layers and the dashboard together.
+Reconciliation helped me verify that all records from the original CSV were accounted for after data cleaning. It also helped me make sure that valid and rejected records were handled separately.
 
-| # | Check | Expected |
-|---|---|---|
-| 1 | Bronze row count after load | 1,365 |
-| 2 | `SUM(flights)` in `gold_monthly_flights` | 1,321 (= `clean_rows`) |
-| 3 | `SUM(flights)` in `gold_airline_summary` | 1,321 |
-| 4 | `SUM(flights)` in `gold_route_summary` | 1,321 |
-| 5 | `SUM(flights)` in `gold_delay_summary` | 1,321 |
-| 6 | On Time + Minor Delay + Major Delay | 1,321 |
-| 7 | Dashboard **Total Flights** card | 1,321 |
-| 8 | Dashboard **Bronze rows** card | 1,365 |
-| 9 | Distinct `flight_id` in `silver_flights_clean` | 1,321 (no duplicates) |
-| 10 | Rows in Silver clean with `passengers > seat_capacity` or `avg_fare < 0` | 0 |
-
-```sql
--- Checks 2 to 6 in one query (all should return 1,321)
-SELECT 'monthly' AS source, SUM(flights) AS flights FROM gold_monthly_flights
-UNION ALL SELECT 'airline', SUM(flights) FROM gold_airline_summary
-UNION ALL SELECT 'route',   SUM(flights) FROM gold_route_summary
-UNION ALL SELECT 'delay',   SUM(flights) FROM gold_delay_summary
-UNION ALL SELECT 'clean',   COUNT(*)     FROM silver_flights_clean;
-```
-
----
-
-## 6. Troubleshooting: Reconciliation Failed
-
-If `unaccounted_rows` is not 0, find the missing rows first, then fix the rule.
-
-### Find flights that are in neither Silver table
-
-```sql
-SELECT DISTINCT b.flight_id
-FROM bronze_airline_flights b
-LEFT ANTI JOIN silver_flights_clean    c ON b.flight_id = c.flight_id
-LEFT ANTI JOIN silver_flights_rejected r ON b.flight_id = r.flight_id;
-```
-
-### Common causes
-
-| Symptom | Likely cause | Fix |
-|---|---|---|
-| `unaccounted_rows` **> 0** (rows missing) | Rows with NULL `passengers` or `avg_fare` fail the expectation (so they are dropped from clean) but do not match the rejected filter, because comparisons with NULL are not true | Add an explicit rule and reject reason for NULL values, or confirm none exist |
-| `unaccounted_rows` **< 0** (rows over counted) | A bad flight that is also duplicated appears twice in the rejected table and is also counted in `duplicate_rows` | Use `SELECT DISTINCT` (or deduplicate by `flight_id`) in `silver_flights_rejected` |
-| `duplicate_rows` too low | Duplicates differ slightly (for example one copy has a blank), so `DISTINCT` keeps both | Deduplicate with `ROW_NUMBER() OVER (PARTITION BY flight_id ORDER BY loaded_at)` and keep row 1 |
-| `bronze_rows` not 1,365 | CSV not fully loaded, extra file in the Volume, or the file was loaded twice | Check `source_file` and `loaded_at` in Bronze, remove stray files |
-| `clean_rows` too high | Duplicates not removed | Revisit DQ-02 |
-| Dashboard Total Flights differs from `clean_rows` | Dashboard not refreshed, or a filter is applied | Re-run the pipeline, then refresh the dashboard, clear filters |
-
-### Diagnostic query: Bronze rows by outcome
-
-```sql
-SELECT
-  CASE
-    WHEN b.passengers > b.seat_capacity OR b.passengers < 0 OR b.avg_fare < 0 THEN 'rejected'
-    ELSE 'candidate clean'
-  END AS bucket,
-  COUNT(*) AS rows_incl_duplicates
-FROM bronze_airline_flights b
-GROUP BY 1;
-```
-
----
-
+This gives me more confidence in the Gold tables and the business results displayed in the dashboard.

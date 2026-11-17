@@ -1,4 +1,4 @@
-## 📊 Databricks AI/BI Dashboard & Insights
+##  Databricks AI/BI Dashboard & Insights
 
 The **Airline Flight Operations Dashboard** is built natively in Databricks SQL / AI/BI Dashboards and organized into three interactive pages with global filtering:
 
