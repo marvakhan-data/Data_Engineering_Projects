@@ -5,7 +5,7 @@
 ### End-to-end Medallion Architecture on Databricks with Lakeflow Spark Declarative Pipelines
 
 
-![Architecture](/images/architecture.png)
+![Architecture](../images/architecture.png)
 
 </div>
 
@@ -168,8 +168,7 @@ Three pages built on the Gold tables only:
 
 ##  Repository Structure
 
-![WorkSpace](/images/workspace_structure.png)
-
+![Workspace](https://github.com/marvakhan-data/Data_Engineering_Projects/blob/main/Airline%20Flight%20Operations%20Analytics%20Project/images/workspace.png?raw=true)
 ##  How to Run
 
 1. **Prepare storage** 
