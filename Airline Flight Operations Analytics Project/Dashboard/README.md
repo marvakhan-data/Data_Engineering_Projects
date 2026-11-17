@@ -12,9 +12,9 @@ Provides an operational and financial snapshot across all carriers and routes[ci
   * *Delay Breakdown:* Horizontal bar chart categorizing flights into **On Time**, **Minor Delay**, and **Major Delay**.
 
 KPIs:
-![Executive Overview KPIs](/images/KPIs.png)
+![Executive Overview KPIs](../images/kpis.png)
 Overview:
-![Executive Overview Charts](/images/Overview(2).png)
+![Executive Overview Charts](../images/Overview(2).png)
 
 ---
 
@@ -24,7 +24,7 @@ Delivers carrier-level scorecards, route profitability, and delay root-cause ana
 * **Top Routes by Revenue:** Ranks top-performing domestic corridors including *Delhi → Kochi*, *Kochi → Delhi*, *Goa → Kolkata*, *Jaipur → Kochi*, and *Bengaluru* routes[cite: 3, 4].
 * **Delay Category & Root Causes:** Donut charts breaking down flight share by delay severity and operational root causes (*Weather*, *Air Traffic*, *Technical*, *Late Arrival*, *Crew*, and *Unknown*).
 
-![Airline Summary & Routes]([/images/Airlines_Routes.png](https://github.com/marvakhan-data/Data_Engineering_Projects/blob/main/Airline%20Flight%20Operations%20Analytics%20Project/images/Airlines_%26_%20delays.png))
+![Airline Summary & Routes](https://github.com/marvakhan-data/Data_Engineering_Projects/blob/main/Airline%20Flight%20Operations%20Analytics%20Project/images/Airlines_%26_%20delays.png)
 
 ---
 
@@ -34,4 +34,4 @@ Tracks pipeline health and row-level data hygiene directly from the Gold audit l
 * **Reconciliation Status:** `Yes` (verifies `1,321 + 19 + 25 = 1,365` with zero data loss)[cite: 5].
 * **Issue Breakdown:** Horizontal bar chart quantifying specific anomalies caught during ingestion: `Duplicates` (`25`), `Missing delay` (`18`), `Missing revenue` (`16`), `Missing reason` (`12`), `Missing airline` (`11`), `Overbooked` (`11`), and `Negative fare` (`8`)[cite: 5].
 
-![Data Quality & Reconciliation](/images/Data_Quality.png)
+![Data Quality & Reconciliation](../images/data_quality.png))
