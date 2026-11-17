@@ -5,7 +5,8 @@
 ### End-to-end Medallion Architecture on Databricks with Lakeflow Spark Declarative Pipelines
 
 
-![Architecture](/images/architecture.png)
+![Architecture](/images/architecture.png.png
+)
 
 </div>
 
