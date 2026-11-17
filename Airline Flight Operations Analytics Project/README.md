@@ -1,6 +1,6 @@
 <div align="center">
 
-# ✈️ Airline Flight Operations Analytics Platform
+#  Airline Flight Operations Analytics Platform
 
 ### End-to-end Medallion Architecture on Databricks with Lakeflow Spark Declarative Pipelines
 
