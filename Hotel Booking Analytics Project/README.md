@@ -10,7 +10,6 @@ The project transforms raw hotel booking data into clean, reliable datasets and 
 
 
 
-![Architecture](images/architecture.png)
 
 ## Pipeline Lineage
 
