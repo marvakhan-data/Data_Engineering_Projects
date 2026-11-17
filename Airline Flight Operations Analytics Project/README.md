@@ -5,7 +5,7 @@
 ### End-to-end Medallion Architecture on Databricks with Lakeflow Spark Declarative Pipelines
 
 
-![Architecture](../images/architecture.png)
+![Pipeline Architecture](https://github.com/marvakhan-data/Data_Engineering_Projects/blob/main/Airline%20Flight%20Operations%20Analytics%20Project/images/architecture.png?raw=true)
 
 </div>
 
@@ -65,7 +65,7 @@ flowchart LR
     B --> F[" GOLD<br/>gold_data_quality<br/><i>Counts + reconciliation</i>"]
     C --> F
     D --> F
-    E --> G["📊 Dashboard<br/>3 pages"]
+    E --> G["Dashboard<br/>3 pages"]
     F --> G
 ```
 
